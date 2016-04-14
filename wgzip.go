@@ -15,6 +15,7 @@ func Gzip(source, target string) error {
 	if err != nil {
 		return err
 	}
+	defer reader.Close()
 
 	filename := filepath.Base(source)
 	target = filepath.Join(target, fmt.Sprintf("%s.gz", filename))
