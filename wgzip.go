@@ -10,10 +10,10 @@ import (
 
 //Gzip zips the source to target.
 //Appends .gz to file.
-func Gzip(source, target string) error {
+func Gzip(source, target string) (string, error) {
 	reader, err := os.Open(source)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer reader.Close()
 
@@ -21,7 +21,7 @@ func Gzip(source, target string) error {
 	target = filepath.Join(target, fmt.Sprintf("%s.gz", filename))
 	writer, err := os.Create(target)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer writer.Close()
 
@@ -30,7 +30,8 @@ func Gzip(source, target string) error {
 	defer archiver.Close()
 
 	_, err = io.Copy(archiver, reader)
-	return err
+	writer.Sync()
+	return target, err
 }
 
 //UnGzip unzips the source to target.
@@ -56,5 +57,6 @@ func UnGzip(source, target string) (string, error) {
 	defer writer.Close()
 
 	_, err = io.Copy(writer, archive)
+	writer.Sync()
 	return target, err
 }
